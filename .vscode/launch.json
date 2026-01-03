@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Apple-Intelligence-API}",
+            "name": "Debug AppleIntelligenceApi",
+            "target": "AppleIntelligenceApi",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug AppleIntelligenceApi"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Apple-Intelligence-API}",
+            "name": "Release AppleIntelligenceApi",
+            "target": "AppleIntelligenceApi",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release AppleIntelligenceApi"
+        }
+    ]
+}

@@ -9,10 +9,27 @@ A Swift-based web API that exposes Apple's on-device Foundation Models through a
 - [X] **Chat completions:** Multi-turn conversations with context
 - [X] **Streaming responses:** Real-time token streaming via Server-Sent Events
 - [X] **Multiple models:** Base and permissive content guardrails
+- [X] **Native Mac app:** Beautiful chat UI with persistent conversation history
 - [ ] **Authentication**
 - [ ] **Structured outputs**
 - [ ] **Tool/function calling**
 - [ ] **Tests**
+
+## Quick Start
+
+The easiest way to run both the server and UI together:
+
+```bash
+./run.sh
+```
+
+This script will:
+1. Build and start the API server
+2. Wait for the server to be ready
+3. Build and launch the Mac chat app
+4. Automatically stop the server when you close the app
+
+Press `Ctrl+C` to stop everything.
 
 ## Running the server
 
@@ -124,6 +141,111 @@ Our API differs in a few key places:
 - Runs server on-device (so no API key needed)
 - Not all features are available!
 
+## Client Applications
+
+### Mac Chat App
+
+A beautiful native macOS chat application with a modern dark UI, conversation threads, and streaming responses.
+
+![Mac App](https://img.shields.io/badge/macOS-14.0+-blue?logo=apple)
+
+#### Running the Mac App
+
+```bash
+cd AppleIntelligenceChat
+swift build
+swift run
+```
+
+Or build a release version:
+```bash
+cd AppleIntelligenceChat
+swift build -c release
+.build/release/AppleIntelligenceChat
+```
+
+#### Features
+- 💬 **Multiple conversation threads** - Create and manage separate chats
+- 💾 **Persistent storage** - All conversations saved locally with SQLite
+- ⚡ **Real-time streaming** - See responses as they're generated
+- 🎨 **Beautiful dark UI** - Purple gradient aesthetic matching Apple Intelligence
+- ⚙️ **Settings panel** - Configure server URL, model, temperature, and system prompt
+- 📱 **Collapsible sidebar** - Toggle the thread list for more chat space
+- 🔄 **Auto-recovery** - Gracefully handles database deletion by starting fresh
+
+#### Configuration
+
+Click the gear icon in the app to configure:
+- **Server URL**: Default `http://localhost:8080`
+- **Model**: Choose between `base` and `permissive`
+- **Temperature**: Control response creativity (0.0 - 2.0)
+- **Max Tokens**: Limit response length
+- **System Prompt**: Customize AI behavior
+
+#### Data Storage
+
+Chat history is stored locally in a SQLite database:
+```
+~/Library/Application Support/AppleIntelligenceChat/chat.db
+```
+
+To reset all conversations, simply delete this file - the app will create a fresh database on next launch.
+
+---
+
+### iMessage Bot
+
+Turn your iMessage into an AI-powered chat interface! The bot monitors your Messages database and automatically responds using Apple Intelligence.
+
+![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python)
+
+#### Setup
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Grant Full Disk Access to Terminal (or your IDE):
+   - System Settings → Privacy & Security → Full Disk Access
+   - Add Terminal.app (or your terminal emulator)
+
+3. Run the bot:
+```bash
+python imessage_bot.py
+```
+
+#### Configuration
+
+Edit the configuration at the top of `imessage_bot.py`:
+
+```python
+# Your phone number or email (messages FROM this will be processed)
+MY_PHONE_NUMBER = "+1234567890"
+
+# API server URL
+API_URL = "http://localhost:8080/api/v1/chat/completions"
+
+# Model to use
+MODEL = "base"
+
+# Enable/disable auto-reply
+AUTO_REPLY_ENABLED = True
+```
+
+#### Features
+- 🤖 **Auto-reply** - Automatically responds to your messages
+- 💾 **Conversation memory** - Maintains context across messages
+- 📱 **iMessage integration** - Works with your existing Messages app
+- 🔄 **Real-time monitoring** - Polls for new messages
+
+#### Important Notes
+- The bot uses AppleScript to send messages, which requires accessibility permissions
+- Only processes messages from the configured phone number
+- Make sure the API server is running before starting the bot
+
+---
+
 ## Development
 
 ### Running tests
@@ -136,11 +258,29 @@ swift test
 
 ### Project structure
 
-- `./Sources/routes.swift`: API route definition
-- `./Sources/Utils/AbortErrors.swift`: Error type definitions
-- `./Sources/Utils/RequestContent.swift`: Parsing incoming requests
-- `./Sources/Utils/ResponseSession.swift`: Foundation models interface
-- `./Sources/Utils/ResponseGenerator.swift`: Generates responses
+```
+.
+├── run.sh                            # Launch script (server + UI)
+│
+├── Sources/AppleIntelligenceApi/     # API Server
+│   ├── routes.swift                  # API route definitions
+│   └── Utils/
+│       ├── AbortErrors.swift         # Error type definitions
+│       ├── RequestContent.swift      # Parsing incoming requests
+│       ├── ResponseSession.swift     # Foundation models interface
+│       └── ResponseGenerator.swift   # Response generation
+│
+├── AppleIntelligenceChat/            # Mac Chat App
+│   └── Sources/AppleIntelligenceChat/
+│       ├── AppleIntelligenceChatApp.swift  # App entry point
+│       ├── ContentView.swift               # UI components
+│       ├── ChatViewModel.swift             # Business logic
+│       ├── APIClient.swift                 # API communication
+│       ├── Models.swift                    # Data models
+│       └── DatabaseManager.swift           # SQLite persistence
+│
+└── imessage_bot.py                   # iMessage Bot
+```
 
 ### Contributing
 
